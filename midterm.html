@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Amortization Calculator</title>
+</head>
+<body>
+    <h2>Loan and Amortization Calculator</h2>
+    
+    <form id="loanForm">
+        <label for="borrowingYear1">Borrowing Year 1:</label>
+        <input type="number" id="borrowingYear1" required><br><br>
+        
+        <!-- Generated automatically -->
+        <label for="borrowingYear2">Borrowing Year 2:</label>
+        <input type="number" id="borrowingYear2" disabled><br><br>
+        
+        <label for="borrowingYear3">Borrowing Year 3:</label>
+        <input type="number" id="borrowingYear3" disabled><br><br>
+        
+        <label for="borrowingYear4">Borrowing Year 4:</label>
+        <input type="number" id="borrowingYear4" disabled><br><br>
+        
+        <label for="loanAmt1">Loan Amount 1:</label>
+        <input type="number" id="loanAmt1" step="0.01" required><br><br>
+        
+        <label for="loanAmt2">Loan Amount 2:</label>
+        <input type="number" id="loanAmt2" step="0.01" required><br><br>
+        
+        <label for="loanAmt3">Loan Amount 3:</label>
+        <input type="number" id="loanAmt3" step="0.01" required><br><br>
+        
+        <label for="loanAmt4">Loan Amount 4:</label>
+        <input type="number" id="loanAmt4" step="0.01" required><br><br>
+        
+        <button type="button" onclick="calculateAmortization()">Calculate</button>
+    </form>
+
+    <h3>Amortization Schedule</h3>
+    <table id="amortizationTable" border="1" width="100%">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Payment</th>
+                <th>Interest</th>
+                <th>Principal</th>
+                <th>Remaining Debt</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function calculateAmortization() {
+            const borrowingYear1 = parseInt(document.getElementById('borrowingYear1').value);
+            document.getElementById('borrowingYear2').value = borrowingYear1 + 1;
+            document.getElementById('borrowingYear3').value = borrowingYear1 + 2;
+            document.getElementById('borrowingYear4').value = borrowingYear1 + 3;
+            
+            const loanAmt1 = parseFloat(document.getElementById('loanAmt1').value);
+            const loanAmt2 = parseFloat(document.getElementById('loanAmt2').value);
+            const loanAmt3 = parseFloat(document.getElementById('loanAmt3').value);
+            const loanAmt4 = parseFloat(document.getElementById('loanAmt4').value);
+            
+            const interestRate = 0.05;  // 5% interest rate
+            const totalYears = 10;  // 10-year amortization
+
+            let totalDebt = loanAmt1 + loanAmt2 + loanAmt3 + loanAmt4;
+            let annualPayment = (totalDebt * interestRate) / (1 - Math.pow(1 + interestRate, -totalYears));
+            
+            let remainingDebt = totalDebt;
+            let tableBody = document.querySelector('#amortizationTable tbody');
+            tableBody.innerHTML = '';  // Clear table before populating
+
+            for (let year = 1; year <= totalYears; year++) {
+                let interest = remainingDebt * interestRate;
+                let principal = annualPayment - interest;
+                remainingDebt -= principal;
+
+                let row = `
+                    <tr>
+                        <td>Year ${year}</td>
+                        <td>$${annualPayment.toFixed(2)}</td>
+                        <td>$${interest.toFixed(2)}</td>
+                        <td>$${principal.toFixed(2)}</td>
+                        <td>$${remainingDebt.toFixed(2)}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+
+                if (remainingDebt <= 0) break;  // Stop if debt is paid off early
+            }
+        }
+    </script>
+</body>
+</html>
